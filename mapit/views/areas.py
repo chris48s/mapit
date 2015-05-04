@@ -254,6 +254,17 @@ def areas_by_name(request, name, format='json'):
 
 
 @ratelimit(minutes=3, requests=100)
+def areas_by_name_fuzzy(request, name, format='json'):
+    args = query_args(request, format)
+    args['name__similar'] = name
+    areas = Area.objects.filter(**args)\
+                .extra(select={'distance': "similarity(mapit_area.name, %s)"},
+                       select_params=[name])\
+                .order_by('-distance')
+    return output_areas(request, 'Areas matching %s' % name, format, areas)
+
+
+@ratelimit(minutes=3, requests=100)
 def area_geometry(request, area_id):
     area = _area_geometry(area_id)
     if isinstance(area, HttpResponse):
