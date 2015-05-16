@@ -1,6 +1,7 @@
 import imp
 import os
 import yaml
+import sys
 
 import django
 
@@ -224,6 +225,8 @@ if django.get_version() >= '1.8':
             'loaders': TEMPLATE_LOADERS,
         },
     }]
+
+sys.path.insert(0, BASE_DIR+'/externals/djorm-ext-pgtrgm/')
 
 INSTALLED_APPS = [
     'django.contrib.auth',
