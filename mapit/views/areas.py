@@ -247,6 +247,10 @@ def areas_by_type(request, type, format='json'):
 
 @ratelimit(minutes=3, requests=100)
 def areas_by_name(request, name, format='json'):
+    fuzzy = request.GET.get('fuzzy', '')
+    if fuzzy.lower() in ['true', '1']:
+        return areas_by_name_fuzzy(request, name, format)
+
     args = query_args(request, format)
     args['name__istartswith'] = name
     areas = Area.objects.filter(**args)
